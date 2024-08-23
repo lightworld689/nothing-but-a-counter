@@ -69,3 +69,10 @@ async def increase_v1(username: str):
 @app.get("/readonly")
 async def readonly_v1():
     return {"status": 200, "description": "Nothing but a read-only counter.", "count": sum(counter.users.values())}
+
+@app.get("/")
+async def top_users_and_total_clicks():
+    sorted_users = sorted(counter.users.items(), key=lambda item: item[1], reverse=True)[:10]
+    top_users = [{"username": user, "clicks": clicks, "rank": rank + 1} for rank, (user, clicks) in enumerate(sorted_users)]
+    total_clicks = sum(counter.users.values())
+    return {"status": 200, "description": "Top 10 users and total clicks", "top_users": top_users, "total_clicks": total_clicks}
