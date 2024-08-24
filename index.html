@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排行榜前10速度计算器</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/css/mdui.min.css" />
+</head>
+
+<body class="mdui-theme-primary-indigo mdui-theme-accent-pink">
+    <div class="mdui-container">
+        <h1 class="mdui-text-center">排行榜前10速度计算器</h1>
+        <div id="results" class="mdui-table-fluid"></div>
+    </div>
+
+    <script>
+        const API_URL = "https://boring.dqjl.us.kg/";
+        let previousData = null;
+
+        async function fetchData() {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            return data;
+        }
+
+        function calculateSpeed(currentData, previousData) {
+            if (!previousData) return;
+
+            const currentTime = new Date();
+            const previousTime = new Date(previousData.timestamp);
+            const timeDifference = (currentTime - previousTime) / 1000; // in seconds
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            const table = document.createElement('table');
+            table.className = 'mdui-table mdui-table-hoverable';
+
+            const thead = document.createElement('thead');
+            thead.innerHTML = `
+                <tr>
+                    <th>用户名</th>
+                    <th>当前点击数</th>
+                    <th>每秒加速度</th>
+                </tr>
+            `;
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+
+            currentData.top_users.forEach(user => {
+                const previousUser = previousData.top_users.find(u => u.username === user.username);
+                if (previousUser) {
+                    const clickDifference = user.clicks - previousUser.clicks;
+                    const speed = clickDifference / timeDifference;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.username}</td>
+                        <td>${user.clicks}</td>
+                        <td>${speed.toFixed(2)}</td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            });
+
+            // Calculate total speed
+            const totalClickDifference = currentData.total_clicks - previousData.total_clicks;
+            const totalSpeed = totalClickDifference / timeDifference;
+
+            const totalRow = document.createElement('tr');
+            totalRow.innerHTML = `
+                <td><strong>总数</strong></td>
+                <td><strong>${currentData.total_clicks}</strong></td>
+                <td><strong>${totalSpeed.toFixed(2)}</strong></td>
+            `;
+            tbody.appendChild(totalRow);
+
+            table.appendChild(tbody);
+            resultsDiv.appendChild(table);
+        }
+
+        async function updateData() {
+            const currentData = await fetchData();
+            currentData.timestamp = new Date();
+
+            if (previousData) {
+                calculateSpeed(currentData, previousData);
+            }
+
+            previousData = currentData;
+        }
+
+        setInterval(updateData, 1000);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/js/mdui.min.js"></script>
+</body>
+
+</html>
