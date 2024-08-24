@@ -94,7 +94,13 @@
             lastUpdateTime = currentTime;
         }
 
-        setInterval(updateData, 1000);
+        // Initial fetch and update
+        updateData().then(() => {
+            // Delay for 1 second before the next fetch
+            setTimeout(() => {
+                setInterval(updateData, 1000);
+            }, 1000);
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/js/mdui.min.js"></script>
