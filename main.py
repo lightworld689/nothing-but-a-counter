@@ -3,6 +3,8 @@ import time
 import threading
 from collections import defaultdict
 import re
+from fastapi import Request
+from fastapi.responses import JSONResponse
 
 import fastapi.middleware.cors
 
@@ -52,9 +54,24 @@ class Counter:
         sorted_users = sorted(self.users.items(), key=lambda item: item[1], reverse=True)
         for rank, (user, _) in enumerate(sorted_users, start=1):
             if user == username:
-                return rank
+                return rank if rank <= 10 else "10+"
         return -1
+    RATE_LIMIT = 50  # 每秒最多50请求
+    RATE_LIMIT_INTERVAL = 1  # 限制间隔为1秒
+    rate_limiter = defaultdict(lambda: {"count": 0, "last_reset": time.time()})
 
+    @app.middleware("http")
+    async def rate_limit_middleware(request: Request, call_next):
+        client = request.client.host
+        now = time.time()
+        if now - Counter.rate_limiter[client]["last_reset"] > Counter.RATE_LIMIT_INTERVAL:
+            Counter.rate_limiter[client] = {"count": 1, "last_reset": now}
+        else:
+            Counter.rate_limiter[client]["count"] += 1
+            if Counter.rate_limiter[client]["count"] > Counter.RATE_LIMIT:
+                return JSONResponse(status_code=429, content={"status": 429, "description": "Too Many Requests"})
+        response = await call_next(request)
+        return response
 counter = Counter()
 counter.start_sync()
 
