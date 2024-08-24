@@ -28,8 +28,7 @@
         function calculateSpeed(currentData, previousData, currentTime) {
             if (!previousData) return;
 
-            const previousTime = new Date(previousData.timestamp);
-            const timeDifference = (currentTime - previousTime) / 1000; // in seconds
+            const timeDifference = (currentTime - lastUpdateTime) / 1000; // in seconds
 
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
