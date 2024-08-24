@@ -17,6 +17,7 @@
     <script>
         const API_URL = "https://boring.dqjl.us.kg/";
         let previousData = null;
+        let lastUpdateTime = null;
 
         async function fetchData() {
             const response = await fetch(API_URL);
@@ -24,10 +25,9 @@
             return data;
         }
 
-        function calculateSpeed(currentData, previousData) {
+        function calculateSpeed(currentData, previousData, currentTime) {
             if (!previousData) return;
 
-            const currentTime = new Date();
             const previousTime = new Date(previousData.timestamp);
             const timeDifference = (currentTime - previousTime) / 1000; // in seconds
 
@@ -82,14 +82,16 @@
         }
 
         async function updateData() {
+            const currentTime = new Date();
             const currentData = await fetchData();
-            currentData.timestamp = new Date();
+            currentData.timestamp = currentTime;
 
             if (previousData) {
-                calculateSpeed(currentData, previousData);
+                calculateSpeed(currentData, previousData, currentTime);
             }
 
             previousData = currentData;
+            lastUpdateTime = currentTime;
         }
 
         setInterval(updateData, 1000);
