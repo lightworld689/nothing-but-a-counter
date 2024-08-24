@@ -20,3 +20,5 @@ re==0.1.1
 threading==0.1.1
 collections==0.1.1
 time==0.1.1
+sqlite3==0.1.1
+os==0.1.1
