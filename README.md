@@ -1,5 +1,6 @@
 # nothing-but-a-counter
-Literally, nothing but a counter.
+Literally, nothing but a counter.  
+**For secondary changes/releases please credit the original author + repository.**
 
 ## Install
 ```bash
