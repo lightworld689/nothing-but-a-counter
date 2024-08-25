@@ -87,10 +87,10 @@ counter.start_sync()
 @app.get("/{username}")
 async def increase_v1(username: str):
     if len(username) > 20 or not re.match(r"^[a-zA-Z0-9_]+$", username):
-        return {"status": 400, "description": "Bad Request: Username can only contain letters, numbers, and underscores, and must be 20 characters or less."}
+        return {"status": 400} #  "description": "Bad Request: Username can only contain letters, numbers, and underscores, and must be 20 characters or less."
     count = counter.increase(username)
     rank = counter.get_rank(username)
-    return {"status": 200, "description": f"User {username} clicked {count} times.", "count": count, "rank": rank}
+    return {"status": 200, "count": count, "rank": rank} #  "description": f"User {username} clicked {count} times.",
 
 @app.get("/")
 async def top_users_and_total_clicks():
