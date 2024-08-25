@@ -92,13 +92,6 @@ async def increase_v1(username: str):
     rank = counter.get_rank(username)
     return {"status": 200, "description": f"User {username} clicked {count} times.", "count": count, "rank": rank}
 
-@app.get("/readonly")
-async def readonly_v1():
-    cursor = counter.conn.cursor()
-    cursor.execute("SELECT SUM(count) FROM users")
-    total_clicks = cursor.fetchone()[0] or 0
-    return {"status": 200, "description": "Nothing but a read-only counter.", "count": total_clicks}
-
 @app.get("/")
 async def top_users_and_total_clicks():
     cursor = counter.conn.cursor()
