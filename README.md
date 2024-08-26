@@ -5,7 +5,7 @@ Literally, nothing but a rank.
 **Original Author: 0x24a  
 Modifier: lightworld689**
 
-Now you can get the GUI rank by visiting https://dqjl.eu.org/nothing-but-a-rank/ !
+Now you can get the GUI rank by visiting https://rank.dqjl.eu.org/ !
 
 ## Features
 - Increment user click count.
